@@ -15,10 +15,12 @@ class CreateAsignacionsTable extends Migration
     {
         Schema::create('asignacions', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('generacion_id');
             $table->unsignedBigInteger('puesto_vigilancia_id');
             $table->date('fecha_registro');
             $table->timestamps();
 
+            $table->foreign('generacion_id')->on('generacions')->references('id');
             $table->foreign('puesto_vigilancia_id')->on('puesto_vigilancias')->references('id');
         });
     }

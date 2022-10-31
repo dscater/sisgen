@@ -103,11 +103,74 @@
                                             :class="{
                                                 'is-invalid': errors.personal,
                                             }"
+                                            @change.native="getNivel($event)"
+                                            @keyup.native="getNivel($event)"
                                         ></el-input-number>
                                         <span
                                             class="error invalid-feedback"
                                             v-if="errors.personal"
                                             v-text="errors.personal[0]"
+                                        ></span>
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <label
+                                            :class="{
+                                                'text-danger': errors.nivel,
+                                            }"
+                                            >Nivel*</label
+                                        >
+                                        <el-input
+                                            class="w-100 d-block"
+                                            :class="{
+                                                'is-invalid': errors.nivel,
+                                            }"
+                                            v-model="oPuestoVigilancia.nivel"
+                                            readonly
+                                        >
+                                            <el-option
+                                                v-for="(
+                                                    item, index
+                                                ) in listNiveles"
+                                                :key="index"
+                                                :value="item"
+                                                :label="item"
+                                            >
+                                            </el-option>
+                                        </el-input>
+                                        <span
+                                            class="error invalid-feedback"
+                                            v-if="errors.nivel"
+                                            v-text="errors.nivel[0]"
+                                        ></span>
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <label
+                                            :class="{
+                                                'text-danger': errors.nivel,
+                                            }"
+                                            >Propietario*</label
+                                        >
+                                        <el-input
+                                            class="w-100 d-block"
+                                            :class="{
+                                                'is-invalid': errors.propietario,
+                                            }"
+                                            v-model="oPuestoVigilancia.propietario"
+                                        >
+                                            <el-option
+                                                v-for="(
+                                                    item, index
+                                                ) in listNiveles"
+                                                :key="index"
+                                                :value="item"
+                                                :label="item"
+                                            >
+                                            </el-option>
+                                        </el-input>
+                                        <span
+                                            class="error invalid-feedback"
+                                            v-if="errors.propietario"
+                                            v-text="errors.propietario[0]"
                                         ></span>
                                     </div>
                                     <div class="form-group col-md-12">
@@ -348,6 +411,16 @@ export default {
                     sortable: true,
                 },
                 {
+                    key: "nivel",
+                    label: "Nivel",
+                    sortable: true,
+                },
+                {
+                    key: "propietario",
+                    label: "Propietario",
+                    sortable: true,
+                },
+                {
                     key: "estado",
                     label: "Estado",
                     sortable: true,
@@ -369,6 +442,8 @@ export default {
                 nombre: "",
                 descripcion: "",
                 personal: "",
+                nivel: "BASICO",
+                propietario: "",
                 estado: "INACTIVO",
             },
             currentPage: 1,
@@ -381,6 +456,7 @@ export default {
                 { value: 100, text: "Mostrar 100 Registros" },
                 { value: this.totalRows, text: "Mostrar Todo" },
             ],
+            listNiveles: ["ALTO", "MEDIO", "BASICO"],
             totalRows: 10,
             filter: null,
         };
@@ -421,6 +497,10 @@ export default {
                 : "";
             this.oPuestoVigilancia.personal = item.personal
                 ? item.personal
+                : "";
+            this.oPuestoVigilancia.nivel = item.nivel ? item.nivel : "";
+            this.oPuestoVigilancia.propietario = item.propietario
+                ? item.propietario
                 : "";
             this.oPuestoVigilancia.estado = item.estado ? item.estado : "";
         },
@@ -470,6 +550,18 @@ export default {
                     "personal",
                     this.oPuestoVigilancia.personal
                         ? this.oPuestoVigilancia.personal
+                        : ""
+                );
+                formdata.append(
+                    "nivel",
+                    this.oPuestoVigilancia.nivel
+                        ? this.oPuestoVigilancia.nivel
+                        : ""
+                );
+                formdata.append(
+                    "propietario",
+                    this.oPuestoVigilancia.propietario
+                        ? this.oPuestoVigilancia.propietario
                         : ""
                 );
                 formdata.append(
@@ -565,10 +657,27 @@ export default {
             this.oPuestoVigilancia.descripcion = "";
             this.oPuestoVigilancia.personal = "";
             this.oPuestoVigilancia.estado = "INACTIVO";
+            this.oPuestoVigilancia.nivel = "";
+            this.oPuestoVigilancia.propietario = "";
             this.accion = "nuevo";
         },
         formatoFecha(date) {
             return this.$moment(String(date)).format("DD [de] MMMM [del] YYYY");
+        },
+        getNivel(e) {
+            let personal = parseInt(e.target.value);
+            let nivel = "ALTO";
+            console.log(personal);
+            if (personal) {
+                if (personal <= 6) {
+                    nivel = "BASICO";
+                } else if (personal <= 12) {
+                    nivel = "MEDIO";
+                }
+            } else {
+                nivel = "BASICO";
+            }
+            this.oPuestoVigilancia.nivel = nivel;
         },
     },
 };

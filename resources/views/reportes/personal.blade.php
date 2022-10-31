@@ -178,7 +178,6 @@
                 <th>Celular</th>
                 <th>Tipo</th>
                 <th>Habilidad</th>
-                <th>Nivel</th>
                 <th>Estado</th>
                 <th>Fecha Registro</th>
             </tr>
@@ -189,9 +188,9 @@
             @endphp
             @foreach ($personals as $personal)
                 <tr>
-                    <td>{{$cont++}}</td>
-                    <td class="img_celda"><img src="{{ asset('imgs/personal/' . $personal->foto) }}"
-                            alt="Foto"></td>
+                    <td>{{ $cont++ }}</td>
+                    <td class="img_celda"><img src="{{ asset('imgs/personal/' . $personal->foto) }}" alt="Foto">
+                    </td>
                     <td>{{ $personal->full_name }}</td>
                     <td>{{ $personal->full_ci }}</td>
                     <td>{{ $personal->fecha_nacimiento }}</td>
@@ -203,8 +202,7 @@
                     <td>{{ $personal->fono }}</td>
                     <td>{{ $personal->cel }}</td>
                     <td>{{ $personal->tipo }}</td>
-                    <td>{{ $personal->habilidad }}</td>
-                    <td>{{ $personal->nivel }}</td>
+                    <td class="centreado">{{ $personal->habilidad }}<br/>({{ $personal->puntuacion_habilidad }})</td>
                     <td>{{ $personal->estado }}</td>
                     <td>{{ $personal->fecha_registro }}</td>
                 </tr>

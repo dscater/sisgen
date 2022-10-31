@@ -10,7 +10,7 @@ class PuestoVigilancia extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre', 'descripcion', 'personal', 'estado',
+        'nombre', 'descripcion', 'personal', 'nivel', 'propietario', 'estado',
         'fecha_registro',
     ];
 

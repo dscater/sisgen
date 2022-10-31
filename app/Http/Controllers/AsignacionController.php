@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
+use App\Models\Generacion;
 use App\Models\Personal;
 use App\Models\PuestoVigilancia;
 use Illuminate\Http\Request;
@@ -88,11 +89,15 @@ class AsignacionController extends Controller
 
     public function index(Request $request)
     {
-        $asignacions = Asignacion::all();
+        $generacion = Generacion::get()->last();
+        $asignacions = [];
+        if ($generacion) {
+            $asignacions = $generacion->asignacions;
+        }
         return response()->JSON(['asignacions' => $asignacions, 'total' => count($asignacions)]);
     }
 
-    public function store(Request $request)
+    public function getResultado(Request $request)
     {
         $request->validate($this->validacion, $this->messages);
 
@@ -102,7 +107,7 @@ class AsignacionController extends Controller
         if (count($personal_existente) < $total_personal_requerido) {
             return response()->JSON([
                 'sw' => false,
-                'msj' => 'No es posible realizar la asignación debido a que la cantidad de personal actual no cubre el requermiento de los puestos de vigilancias existentes',
+                'msj' => 'No es posible realizar la asignación debido a que la cantidad de personal actual no cubre el requerimiento de los puestos de vigilancias existentes',
             ]);
         }
 
@@ -128,7 +133,6 @@ class AsignacionController extends Controller
             'guardia_max' => $request->cant_max_guar_basico,
         ];
 
-
         $h_experto = [
             'min' => $request->cant_min_experto,
             'max' => $request->cant_max_experto
@@ -146,20 +150,62 @@ class AsignacionController extends Controller
             'max' => $request->cant_max_principiante
         ];
 
+        // VALIDAR LA CANTIDAD DE SUPERVISORES EXISTENTES DE ACUERDO AL REQUERIDO POR PUESTOS DE VIGILANCIA
+        $cpv_alto = count(PuestoVigilancia::where("estado", "ACTIVO")->where("nivel", "ALTO")->get());
+        $cpv_medio = count(PuestoVigilancia::where("estado", "ACTIVO")->where("nivel", "MEDIO")->get());
+        $cpv_basico = count(PuestoVigilancia::where("estado", "ACTIVO")->where("nivel", "BAJO")->get());
+
+        $total_sup_requeridos = (int)$cpv_alto * (int)$nivel_alto["supervisor_min"] + (int)$cpv_medio * (int)$nivel_medio["supervisor_min"] + (int)$cpv_basico * (int)$nivel_basico["supervisor_min"];
+
+        $personal_existente = Personal::where('estado', 'ACTIVO')->where("tipo", "SUPERVISOR")->get();
+        if (count($personal_existente) < $total_sup_requeridos) {
+            return response()->JSON([
+                'sw' => false,
+                'msj' => 'No es posible realizar la asignación debido a que la cantidad de supervisores no es suficiente',
+            ]);
+        }
+
         ini_set('max_execution_time', 0);
-        $resultado = Asignacion::algoritmo($nivel_alto, $nivel_medio, $nivel_basico, $h_experto, $h_moderado, $h_intermedio, $h_principiante);
+        $resultado = AlgoritmoController::algoritmo($nivel_alto, $nivel_medio, $nivel_basico, $h_experto, $h_moderado, $h_intermedio, $h_principiante);
+        sleep(2);
+        return response()->JSON([
+            'sw' => true,
+            'msj' => 'La asignación se completó exitosamente',
+            'resultado' => $resultado
+        ]);
+    }
 
-        // VACIAR ASIGNACIÓN ANTERIOR
-        DB::delete("DELETE FROM asignacion_personals");
-        DB::delete("DELETE FROM asignacions");
-
+    public function store(Request $request)
+    {
+        $resultado = $request;
         $fecha_registro = date('Y-m-d');
+        $generacion = Generacion::where("fecha", $fecha_registro)->get()->first();
+        if ($generacion) {
+            // VACIAR ASIGNACIÓN ANTERIOR
+            foreach ($generacion->asignacions as $value) {
+                $value->asignacion_personals()->delete();
+            }
+            $generacion->asignacions()->delete();
+        } else {
+            $generacion = Generacion::create([
+                "fecha" => $fecha_registro
+            ]);
+        }
+
         foreach ($resultado[1] as $res) {
             $nueva_asignacion = Asignacion::create([
-                'puesto_vigilancia_id' => $res[0]->id,
+                "generacion_id" => $generacion->id,
+                'puesto_vigilancia_id' => $res[0]["id"],
                 'fecha_registro' => $fecha_registro
             ]);
-            foreach ($res[1] as $p) {
+            foreach ($res[1]["supervisores"] as $p) {
+                $personal = Personal::findOrFail($p);
+                $nueva_asignacion->asignacion_personals()->create([
+                    'personal_id' => $personal->id,
+                    'tipo_personal' => $personal->tipo,
+                ]);
+            }
+            foreach ($res[1]["guardias"] as $p) {
                 $personal = Personal::findOrFail($p);
                 $nueva_asignacion->asignacion_personals()->create([
                     'personal_id' => $personal->id,
@@ -171,7 +217,7 @@ class AsignacionController extends Controller
         return response()->JSON([
             'sw' => true,
             'msj' => 'La asignación se completó exitosamente',
-            'asignacions' => $asignacions = Asignacion::all()
+            'generacion' => $generacion
         ]);
     }
 

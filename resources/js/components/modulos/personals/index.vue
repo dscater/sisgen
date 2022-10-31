@@ -221,22 +221,11 @@
                                                                 row.item
                                                                     .habilidad
                                                                     ? row.item
-                                                                          .habilidad
-                                                                    : "S/D"
-                                                            }}</b-col>
-                                                        </b-row>
-                                                        <b-row class="mb-2">
-                                                            <b-col
-                                                                sm="3"
-                                                                class="text-sm-right"
-                                                                ><b
-                                                                    >Nivel:</b
-                                                                ></b-col
-                                                            >
-                                                            <b-col>{{
-                                                                row.item.nivel
-                                                                    ? row.item
-                                                                          .nivel
+                                                                          .habilidad +
+                                                                      "(" +
+                                                                      row.item
+                                                                          .puntuacion_habilidad +
+                                                                      ")"
                                                                     : "S/D"
                                                             }}</b-col>
                                                         </b-row>
@@ -421,8 +410,8 @@ export default {
                 fono: "",
                 cel: "",
                 tipo: "",
+                puntuacion_habilidad: "",
                 habilidad: "",
-                nivel: "",
                 estado: "INACTIVO",
                 foto: null,
             },
@@ -466,8 +455,10 @@ export default {
             this.oPersonal.fono = item.fono ? item.fono : "";
             this.oPersonal.cel = item.cel ? item.cel : "";
             this.oPersonal.tipo = item.tipo ? item.tipo : "";
+            this.oPersonal.puntuacion_habilidad = item.puntuacion_habilidad
+                ? item.puntuacion_habilidad
+                : "";
             this.oPersonal.habilidad = item.habilidad ? item.habilidad : "";
-            this.oPersonal.nivel = item.nivel ? item.nivel : "";
             this.oPersonal.estado = item.estado ? item.estado : "";
             this.modal_accion = "edit";
             this.muestra_modal = true;
@@ -557,8 +548,8 @@ export default {
             this.oPersonal.fono = "";
             this.oPersonal.cel = "";
             this.oPersonal.tipo = "";
+            this.oPersonal.puntuacion_habilidad = "";
             this.oPersonal.habilidad = "";
-            this.oPersonal.nivel = "";
             this.oPersonal.estado = "INACTIVO";
             this.oPersonal.foto = null;
         },

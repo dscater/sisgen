@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
 use App\Models\Asistencia;
+use App\Models\Generacion;
 use App\Models\Personal;
 use App\Models\PuestoVigilancia;
 use App\Models\User;
@@ -45,7 +46,11 @@ class ReporteController extends Controller
 
     public function asignacions()
     {
-        $asignacions = Asignacion::all();
+        $generacion = Generacion::get()->last();
+        $asignacions = [];
+        if ($generacion) {
+            $asignacions = $generacion->asignacions;
+        }
         $pdf = PDF::loadView('reportes.asignacions', compact('asignacions'))->setPaper('legal', 'portrait');
         // ENUMERAR LAS PÁGINAS USANDO CANVAS
         $pdf->output();
@@ -62,6 +67,14 @@ class ReporteController extends Controller
     {
         $filtro =  $request->filtro;
         $personals = Personal::all();
+
+        if ($filtro == 'Por C.I.') {
+            $request->validate([
+                'ci' => 'required',
+            ]);
+            $personals = Personal::where('ci', $request->ci)->get();
+        }
+
         if ($filtro == 'Estado') {
             $request->validate([
                 'estado' => 'required',

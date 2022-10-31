@@ -18,6 +18,8 @@ class CreatePuestoVigilanciasTable extends Migration
             $table->string('nombre', 255);
             $table->text('descripcion');
             $table->integer('personal');
+            $table->string("nivel", 255);
+            $table->string("propietario", 255);
             $table->enum('estado', ['ACTIVO', 'INACTIVO']);
             $table->date('fecha_registro');
             $table->timestamps();

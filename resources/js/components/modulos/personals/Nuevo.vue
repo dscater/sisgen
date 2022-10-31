@@ -336,26 +336,48 @@
                             <div class="form-group col-md-6">
                                 <label
                                     :class="{
+                                        'text-danger':
+                                            errors.puntuacion_habilidad,
+                                    }"
+                                    >Puntuación de habilidad (1-100)*</label
+                                >
+                                <el-input-number
+                                    placeholder="Puntuación de habilidad"
+                                    class="w-100 d-block"
+                                    :class="{
+                                        'is-invalid':
+                                            errors.puntuacion_habilidad,
+                                    }"
+                                    v-model="personal.puntuacion_habilidad"
+                                    controls-position="right"
+                                    :min="1"
+                                    :max="100"
+                                    :step="1"
+                                    @keyup.native="obtieneHabilidad($event)"
+                                    @change.native="obtieneHabilidad($event)"
+                                ></el-input-number>
+                                <span
+                                    class="error invalid-feedback"
+                                    v-if="errors.puntuacion_habilidad"
+                                    v-text="errors.dir[0]"
+                                ></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label
+                                    :class="{
                                         'text-danger': errors.habilidad,
                                     }"
                                     >Habilidad*</label
                                 >
-                                <el-select
+                                <el-input
                                     class="w-100 d-block"
                                     :class="{
                                         'is-invalid': errors.habilidad,
                                     }"
                                     v-model="personal.habilidad"
-                                    clearable
+                                    readonly
                                 >
-                                    <el-option
-                                        v-for="(item, index) in listHabilidades"
-                                        :key="index"
-                                        :value="item"
-                                        :label="item"
-                                    >
-                                    </el-option>
-                                </el-select>
+                                </el-input>
                                 <span
                                     class="error invalid-feedback"
                                     v-if="errors.habilidad"
@@ -363,35 +385,6 @@
                                 ></span>
                             </div>
 
-                            <div class="form-group col-md-6">
-                                <label
-                                    :class="{
-                                        'text-danger': errors.nivel,
-                                    }"
-                                    >Nivel*</label
-                                >
-                                <el-select
-                                    class="w-100 d-block"
-                                    :class="{
-                                        'is-invalid': errors.nivel,
-                                    }"
-                                    v-model="personal.nivel"
-                                    clearable
-                                >
-                                    <el-option
-                                        v-for="(item, index) in listNiveles"
-                                        :key="index"
-                                        :value="item"
-                                        :label="item"
-                                    >
-                                    </el-option>
-                                </el-select>
-                                <span
-                                    class="error invalid-feedback"
-                                    v-if="errors.nivel"
-                                    v-text="errors.nivel[0]"
-                                ></span>
-                            </div>
                             <div class="form-group col-md-6">
                                 <label
                                     :class="{
@@ -494,6 +487,7 @@ export default {
                 fono: "",
                 cel: "",
                 tipo: "",
+                puntuacion_habilidad: "",
                 habilidad: "",
                 nivel: "",
                 estado: "INACTIVO",
@@ -542,6 +536,7 @@ export default {
                 { value: "TJ", label: "Tarija" },
                 { value: "PD", label: "Pando" },
                 { value: "BN", label: "Beni" },
+                { value: "OTRO", label: "Otro" },
             ],
             listTipos: ["SUPERVISOR", "GUARDIA"],
             listHabilidades: [
@@ -550,7 +545,6 @@ export default {
                 "INTERMEDIO",
                 "PRINCIPIANTE",
             ],
-            listNiveles: ["ALTO", "MEDIO", "BAJO"],
             errors: [],
         };
     },
@@ -625,12 +619,14 @@ export default {
                     this.personal.tipo ? this.personal.tipo : ""
                 );
                 formdata.append(
-                    "habilidad",
-                    this.personal.habilidad ? this.personal.habilidad : ""
+                    "puntuacion_habilidad",
+                    this.personal.puntuacion_habilidad
+                        ? this.personal.puntuacion_habilidad
+                        : ""
                 );
                 formdata.append(
-                    "nivel",
-                    this.personal.nivel ? this.personal.nivel : ""
+                    "habilidad",
+                    this.personal.habilidad ? this.personal.habilidad : ""
                 );
                 formdata.append(
                     "estado",
@@ -708,9 +704,25 @@ export default {
             this.personal.cel = "";
             this.personal.tipo = "";
             this.personal.habilidad = "";
-            this.personal.nivel = "";
             this.personal.estado = "INACTIVO";
             this.$refs.input_file.value = null;
+        },
+        obtieneHabilidad(e) {
+            let puntuacion = parseInt(e.target.value);
+            if (puntuacion) {
+                if (puntuacion <= 25) {
+                    this.personal.habilidad = "PRINCIPIANTE";
+                } else if (puntuacion <= 50) {
+                    this.personal.habilidad = "INTERMEDIO";
+                } else if (puntuacion <= 75) {
+                    this.personal.habilidad = "MODERADO";
+                } else {
+                    this.personal.habilidad = "EXPERTO";
+                }
+            } else {
+                this.personal.habilidad = "";
+            }
+            this.personal.puntuacion_habilidad = puntuacion;
         },
     },
 };

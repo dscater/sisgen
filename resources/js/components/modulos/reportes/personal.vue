@@ -54,6 +54,34 @@
                                                 class="form-group col-md-12"
                                                 v-if="
                                                     oReporte.filtro ==
+                                                    'Por C.I.'
+                                                "
+                                            >
+                                                <label
+                                                    :class="{
+                                                        'text-danger':
+                                                            errors.ci,
+                                                    }"
+                                                    >Ingresse el C.I.*</label
+                                                >
+                                                <el-input
+                                                    v-model="oReporte.ci"
+                                                    class="d-block"
+                                                    :class="{
+                                                        'is-invalid': errors.ci,
+                                                    }"
+                                                >
+                                                </el-input>
+                                                <span
+                                                    class="error invalid-feedback"
+                                                    v-if="errors.ci"
+                                                    v-text="errors.ci[0]"
+                                                ></span>
+                                            </div>
+                                            <div
+                                                class="form-group col-md-12"
+                                                v-if="
+                                                    oReporte.filtro ==
                                                     'Tipo de personal'
                                                 "
                                             >
@@ -91,8 +119,7 @@
                                             <div
                                                 class="form-group col-md-12"
                                                 v-if="
-                                                    oReporte.filtro ==
-                                                    'Estado'
+                                                    oReporte.filtro == 'Estado'
                                                 "
                                             >
                                                 <label
@@ -166,13 +193,14 @@ export default {
             errors: [],
             oReporte: {
                 filtro: "Todos",
+                ci: "",
                 tipo: "",
                 estado: "",
             },
             aFechas: [],
             enviando: false,
             textoBtn: "Generar Reporte",
-            listFiltro: ["Todos", "Tipo de personal", "Estado"],
+            listFiltro: ["Todos", "Por C.I.", "Tipo de personal", "Estado"],
             listTipos: ["SUPERVISOR", "GUARDIA"],
             listEstado: ["ACTIVO", "INACTIVO"],
             errors: [],

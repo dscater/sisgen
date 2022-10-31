@@ -879,8 +879,7 @@
                                                                     .path_image
                                                             "
                                                         ></b-avatar>
-                                                        <span class="mr-auto"
-                                                            >
+                                                        <span class="mr-auto">
                                                             {{
                                                                 ap.personal
                                                                     .full_name
@@ -904,11 +903,22 @@
                 </div>
             </div>
         </section>
+        <Preview
+            :muestra_modal="muestra_modal"
+            :resultado="resultado"
+            @close="muestra_modal = false"
+            @loadingRegistros="loadingRegistros = true"
+            @envioModal="getAsignaciones"
+        ></Preview>
     </div>
 </template>
 
 <script>
+import Preview from "./Preview.vue";
 export default {
+    components: {
+        Preview,
+    },
     data() {
         return {
             permisos: localStorage.getItem("permisos"),
@@ -919,6 +929,7 @@ export default {
             loadingWindow: Loading.service({
                 fullscreen: this.fullscreenLoading,
             }),
+            muestra_modal: false,
             oAsignacion: {
                 cant_min_per_alto: 11,
                 cant_max_per_alto: 15,
@@ -948,6 +959,7 @@ export default {
             generacionPorcentaje: 0,
             intervalCargaAsignacion: null,
             enviando_reporte: false,
+            resultado: [],
         };
     },
     mounted() {
@@ -956,78 +968,57 @@ export default {
     },
     methods: {
         generaAsignacion() {
-            Swal.fire({
-                title: "¿Esta seguro(a) de generar una nueva asignación?",
-                html: `<strong>Esta acción no se podrá deshacer una vez que comience</strong>`,
-                showCancelButton: true,
-                confirmButtonColor: "#05568e",
-                confirmButtonText: "Si, estoy seguro(a)",
-                cancelButtonText: "No, cancelar",
-                denyButtonText: `No, cancelar`,
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    this.enviando = true;
-                    let self = this;
-                    this.intervalCargaAsignacion = setInterval(
-                        self.incrementaCarga,
-                        400
-                    );
-                    this.loadingRegistros = true;
-                    axios
-                        .post("/admin/asignacions", this.oAsignacion)
-                        .then((response) => {
-                            this.enviando = false;
-                            clearInterval(this.intervalCargaAsignacion);
-                            this.generacionPorcentaje = 100;
-                            setTimeout(this.ocultaBarraProgreso(), 500);
-                            if (response.data.sw) {
-                                this.getAsignaciones();
-                                Swal.fire({
-                                    icon: "success",
-                                    title: response.data.msj,
-                                    showConfirmButton: true,
-                                    confirmButtonColor: "#05568e",
-                                    confirmButtonText: "Aceptar",
-                                    timer: 1500,
-                                });
-                                this.listAsignaciones =
-                                    response.data.asignacions;
-                            } else {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "¡Error!",
-                                    text: response.data.msj,
-                                    showConfirmButton: true,
-                                    confirmButtonColor: "#05568e",
-                                    confirmButtonText: "Aceptar",
-                                    timer: 3500,
-                                });
-                            }
-                        })
-                        .catch((error) => {
-                            this.enviando = false;
-                            clearInterval(this.intervalCargaAsignacion);
-                            this.ocultaBarraProgreso();
-                            if (error.response) {
-                                if (error.response.status === 422) {
-                                    this.errors = error.response.data.errors;
-                                } else {
-                                    Swal.fire({
-                                        icon: "error",
-                                        title: error,
-                                        showConfirmButton: true,
-                                        confirmButtonColor: "#05568e",
-                                        confirmButtonText: "Cerrar",
-                                    });
-                                }
-                            }
+            this.generacionPorcentaje = 1;
+            this.enviando = true;
+            let self = this;
+            this.intervalCargaAsignacion = setInterval(
+                self.incrementaCarga,
+                400
+            );
+            axios
+                .post("/admin/asignacions/getResultado", this.oAsignacion)
+                .then((response) => {
+                    this.enviando = false;
+                    clearInterval(this.intervalCargaAsignacion);
+                    if (response.data.sw) {
+                        this.generacionPorcentaje = 100;
+                        this.muestra_modal = true;
+                        this.resultado = response.data.resultado;
+                    } else {
+                        this.muestra_modal = false;
+                        Swal.fire({
+                            icon: "error",
+                            title: "¡Error!",
+                            text: response.data.msj,
+                            showConfirmButton: true,
+                            confirmButtonColor: "#05568e",
+                            confirmButtonText: "Aceptar",
+                            timer: 3500,
                         });
-                }
-            });
+                    }
+                })
+                .catch((error) => {
+                    this.enviando = false;
+                    clearInterval(this.intervalCargaAsignacion);
+                    this.ocultaBarraProgreso();
+                    if (error.response) {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data.errors;
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Ocurrió un error y no se pudo llevar a cabo la ejecución del algoritmo",
+                                showConfirmButton: true,
+                                confirmButtonColor: "#05568e",
+                                confirmButtonText: "Cerrar",
+                            });
+                        }
+                    }
+                });
         },
         getAsignaciones() {
             this.loadingRegistros = true;
+            this.muestra_modal = false;
             axios.get("/admin/asignacions").then((response) => {
                 this.loadingRegistros = false;
                 this.listAsignaciones = response.data.asignacions;

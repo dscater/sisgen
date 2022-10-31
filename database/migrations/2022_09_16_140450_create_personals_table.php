@@ -31,7 +31,6 @@ class CreatePersonalsTable extends Migration
             $table->string("cel", 155);
             $table->enum("tipo", ['SUPERVISOR', 'GUARDIA']);
             $table->enum("habilidad", ['EXPERTO', 'MODERADO', 'INTERMEDIO', 'PRINCIPIANTE']);
-            $table->enum("nivel", ['ALTO', 'MEDIO', 'BAJO']);
             $table->enum("estado", ['ACTIVO', 'INACTIVO']);
             $table->string("foto", 255)->nullable();
             $table->date("fecha_registro");

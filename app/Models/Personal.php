@@ -12,7 +12,7 @@ class Personal extends Model
     protected $fillable = [
         'nombre', 'paterno', 'materno', 'ci', 'ci_exp',
         'fecha_nacimiento', 'estatura', 'peso', 'nacionalidad', 'dir',
-        'correo', 'fono', 'cel', 'tipo', 'habilidad', 'nivel', 'estado',
+        'correo', 'fono', 'cel', 'tipo', 'puntuacion_habilidad', 'habilidad', 'estado',
         'foto', 'fecha_registro',
     ];
 

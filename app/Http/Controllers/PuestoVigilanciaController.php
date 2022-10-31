@@ -11,6 +11,8 @@ class PuestoVigilanciaController extends Controller
         'nombre' => 'required|min:4|unique:puesto_vigilancias,nombre',
         'descripcion' => 'nullable|min:4',
         'personal' => 'required|numeric|min:1',
+        'nivel' => 'required',
+        'propietario' => 'required',
         'estado' => 'required',
     ];
 
@@ -50,6 +52,6 @@ class PuestoVigilanciaController extends Controller
 
     public function getLista()
     {
-        return response()->JSON(PuestoVigilancia::all());
+        return response()->JSON(PuestoVigilancia::where("estado", "ACTIVO")->get());
     }
 }

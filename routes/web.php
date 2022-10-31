@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlgoritmoController;
 use App\Http\Controllers\AsignacionController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\ConfiguracionController;
@@ -61,6 +62,7 @@ Route::prefix('admin')->group(function () {
     ]);
 
     // ASIGNACIÓN DE PERSONAL
+    Route::post('asignacions/getResultado', [AsignacionController::class, 'getResultado']);
     Route::resource('asignacions', AsignacionController::class)->only([
         'index', 'store', 'update', 'destroy', 'show'
     ]);

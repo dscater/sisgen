@@ -23,8 +23,8 @@ class PersonalController extends Controller
         'fono' => 'required|min:4',
         'cel' => 'required|min:4',
         'tipo' => 'required',
+        'puntuacion_habilidad' => 'required',
         'habilidad' => 'required',
-        'nivel' => 'required',
         'estado' => 'required',
     ];
 
