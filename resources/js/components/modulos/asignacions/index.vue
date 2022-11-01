@@ -68,7 +68,8 @@
                                                         Cantidad Mínima
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_per_alto
@@ -80,8 +81,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_per_alto,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_per_alto',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_per_alto',$event)"
+                                                        />
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -94,7 +97,8 @@
                                                         ></span>
                                                     </td>
                                                     <td rowspan="2">
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_sup_alto
@@ -106,8 +110,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_sup_alto,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_sup_alto',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_sup_alto',$event)"
+                                                        />
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -120,7 +126,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_guar_alto
@@ -132,8 +139,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_guar_alto,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_guar_alto',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_guar_alto',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -151,7 +160,8 @@
                                                         Cantidad Máxima
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_per_alto
@@ -163,8 +173,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_per_alto,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_max_per_alto',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_max_per_alto',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -177,7 +189,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_guar_alto
@@ -189,8 +202,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_guar_alto,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_max_guar_alto',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_max_guar_alto',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -216,7 +231,8 @@
                                                         Cantidad Mínima
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_per_medio
@@ -228,8 +244,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_per_medio,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_per_medio',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_per_medio',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -242,7 +260,8 @@
                                                         ></span>
                                                     </td>
                                                     <td rowspan="2">
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_sup_medio
@@ -254,8 +273,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_sup_medio,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_sup_medio',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_sup_medio',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -268,7 +289,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_guar_medio
@@ -280,8 +302,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_guar_medio,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_guar_medio',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_guar_medio',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -299,7 +323,8 @@
                                                         Cantidad Máxima
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_per_medio
@@ -311,8 +336,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_per_medio,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_max_per_medio',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_max_per_medio',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -325,7 +352,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_guar_medio
@@ -337,8 +365,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_guar_medio,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_max_guar_medio',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_max_guar_medio',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -364,7 +394,8 @@
                                                         Cantidad Mínima
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_per_basico
@@ -376,8 +407,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_per_basico,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_per_basico',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_per_basico',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -390,7 +423,8 @@
                                                         ></span>
                                                     </td>
                                                     <td rowspan="2">
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_sup_basico
@@ -402,8 +436,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_sup_basico,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_sup_basico',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_sup_basico',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -416,7 +452,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_guar_basico
@@ -428,8 +465,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_guar_basico,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_min_guar_basico',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_min_guar_basico',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -447,7 +486,8 @@
                                                         Cantidad Máxima
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_per_basico
@@ -459,8 +499,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_per_basico,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_max_per_basico',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_max_per_basico',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -473,7 +515,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_guar_basico
@@ -485,8 +528,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_guar_basico,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPuesto('cant_max_guar_basico',$event)"
+                                                            @keyup="actualizaValoracionPuesto('cant_max_guar_basico',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -539,7 +584,8 @@
                                                         Experto
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_experto
@@ -551,8 +597,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_experto,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_min_experto',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_min_experto',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -565,7 +613,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_experto
@@ -577,8 +626,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_experto,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_max_experto',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_max_experto',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -596,7 +647,8 @@
                                                         Moderado
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_moderado
@@ -608,8 +660,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_moderado,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_min_moderado',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_min_moderado',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -622,7 +676,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_moderado
@@ -634,8 +689,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_moderado,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_max_moderado',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_max_moderado',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -659,7 +716,8 @@
                                                         Intermedio
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_intermedio
@@ -671,8 +729,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_intermedio,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_min_intermedio',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_min_intermedio',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -685,7 +745,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_intermedio
@@ -697,8 +758,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_intermedio,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_max_intermedio',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_max_intermedio',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -716,7 +779,8 @@
                                                         Principiante
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Min."
                                                             v-model="
                                                                 oAsignacion.cant_min_principiante
@@ -728,8 +792,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_min_principiante,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_min_principiante',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_min_principiante',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -742,7 +808,8 @@
                                                         ></span>
                                                     </td>
                                                     <td>
-                                                        <el-input-number
+                                                        <input
+                                                            type="number"
                                                             placeholder="Max."
                                                             v-model="
                                                                 oAsignacion.cant_max_principiante
@@ -754,8 +821,10 @@
                                                                 'is-invalid':
                                                                     errors.cant_max_principiante,
                                                             }"
-                                                            class="w-full"
-                                                        ></el-input-number>
+                                                            class="form-control text-center"
+                                                            @change="actualizaValoracionPersonal('cant_max_principiante',$event)"
+                                                            @keyup="actualizaValoracionPersonal('cant_max_principiante',$event)"
+                                                        >
                                                         <span
                                                             class="error invalid-feedback"
                                                             v-if="
@@ -963,10 +1032,61 @@ export default {
         };
     },
     mounted() {
+        this.getValoraciones();
         this.loadingWindow.close();
         this.getAsignaciones();
     },
     methods: {
+        getValoraciones() {
+            axios.get("/admin/valoracions/getValoraciones").then((response) => {
+                this.oAsignacion.cant_min_per_alto =
+                    response.data.cant_min_per_alto;
+                this.oAsignacion.cant_max_per_alto =
+                    response.data.cant_max_per_alto;
+                this.oAsignacion.cant_min_sup_alto =
+                    response.data.cant_min_sup_alto;
+                this.oAsignacion.cant_min_guar_alto =
+                    response.data.cant_min_guar_alto;
+                this.oAsignacion.cant_max_guar_alto =
+                    response.data.cant_max_guar_alto;
+                this.oAsignacion.cant_min_per_medio =
+                    response.data.cant_min_per_medio;
+                this.oAsignacion.cant_max_per_medio =
+                    response.data.cant_max_per_medio;
+                this.oAsignacion.cant_min_sup_medio =
+                    response.data.cant_min_sup_medio;
+                this.oAsignacion.cant_min_guar_medio =
+                    response.data.cant_min_guar_medio;
+                this.oAsignacion.cant_max_guar_medio =
+                    response.data.cant_max_guar_medio;
+                this.oAsignacion.cant_min_per_basico =
+                    response.data.cant_min_per_basico;
+                this.oAsignacion.cant_max_per_basico =
+                    response.data.cant_max_per_basico;
+                this.oAsignacion.cant_min_sup_basico =
+                    response.data.cant_min_sup_basico;
+                this.oAsignacion.cant_min_guar_basico =
+                    response.data.cant_min_guar_basico;
+                this.oAsignacion.cant_max_guar_basico =
+                    response.data.cant_max_guar_basico;
+                this.oAsignacion.cant_min_experto =
+                    response.data.cant_min_experto;
+                this.oAsignacion.cant_max_experto =
+                    response.data.cant_max_experto;
+                this.oAsignacion.cant_min_moderado =
+                    response.data.cant_min_moderado;
+                this.oAsignacion.cant_max_moderado =
+                    response.data.cant_max_moderado;
+                this.oAsignacion.cant_min_intermedio =
+                    response.data.cant_min_intermedio;
+                this.oAsignacion.cant_max_intermedio =
+                    response.data.cant_max_intermedio;
+                this.oAsignacion.cant_min_principiante =
+                    response.data.cant_min_principiante;
+                this.oAsignacion.cant_max_principiante =
+                    response.data.cant_max_principiante;
+            });
+        },
         generaAsignacion() {
             this.generacionPorcentaje = 1;
             this.enviando = true;
@@ -1057,6 +1177,22 @@ export default {
                             this.errors = responseObj.errors;
                     }
                 });
+        },
+        actualizaValoracionPuesto(key, event) {
+            axios
+                .post("/admin/valoracions/actualizaValoracionPuesto", {
+                    key: key,
+                    valor: event.target.value,
+                })
+                .then((response) => {});
+        },
+        actualizaValoracionPersonal(key, event) {
+            axios
+                .post("/admin/valoracions/actualizaValoracionPersonal", {
+                    key: key,
+                    valor: event.target.value,
+                })
+                .then((response) => {});
         },
     },
 };

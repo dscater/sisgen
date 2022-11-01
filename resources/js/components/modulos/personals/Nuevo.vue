@@ -21,7 +21,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form style="overflow: auto">
                         <div class="row">
                             <div class="form-group col-md-6">
                                 <label
@@ -311,6 +311,29 @@
                                     }"
                                     >Tipo*</label
                                 >
+                                <el-input
+                                    class="w-100 d-block"
+                                    :class="{
+                                        'is-invalid': errors.tipo,
+                                    }"
+                                    v-model="personal.tipo"
+                                    clearable
+                                    readonly
+                                >
+                                </el-input>
+                                <span
+                                    class="error invalid-feedback"
+                                    v-if="errors.tipo"
+                                    v-text="errors.tipo[0]"
+                                ></span>
+                            </div>
+                            <!-- <div class="form-group col-md-6">
+                                <label
+                                    :class="{
+                                        'text-danger': errors.tipo,
+                                    }"
+                                    >Tipo*</label
+                                >
                                 <el-select
                                     class="w-100 d-block"
                                     :class="{
@@ -332,14 +355,14 @@
                                     v-if="errors.tipo"
                                     v-text="errors.tipo[0]"
                                 ></span>
-                            </div>
+                            </div> -->
                             <div class="form-group col-md-6">
                                 <label
                                     :class="{
                                         'text-danger':
                                             errors.puntuacion_habilidad,
                                     }"
-                                    >Puntuación de habilidad (1-100)*</label
+                                    >Puntuación de habilidad*</label
                                 >
                                 <el-input-number
                                     placeholder="Puntuación de habilidad"
@@ -486,8 +509,8 @@ export default {
                 correo: "",
                 fono: "",
                 cel: "",
-                tipo: "",
-                puntuacion_habilidad: "",
+                tipo: "GUARDIA",
+                puntuacion_habilidad: "1",
                 habilidad: "",
                 nivel: "",
                 estado: "INACTIVO",
@@ -546,12 +569,31 @@ export default {
                 "PRINCIPIANTE",
             ],
             errors: [],
+            oValoracion: {
+                cant_min_experto: 12,
+                cant_max_moderado: 11,
+                cant_max_intermedio: 7,
+                cant_max_principiante: 3,
+            },
         };
     },
     mounted() {
+        this.getValoraciones();
         this.bModal = this.muestra_modal;
     },
     methods: {
+        getValoraciones() {
+            axios.get("/admin/valoracions/getValoraciones").then((response) => {
+                this.oValoracion.cant_min_experto =
+                    response.data.cant_min_experto;
+                this.oValoracion.cant_max_moderado =
+                    response.data.cant_max_moderado;
+                this.oValoracion.cant_max_intermedio =
+                    response.data.cant_max_intermedio;
+                this.oValoracion.cant_max_principiante =
+                    response.data.cant_max_principiante;
+            });
+        },
         setRegistroModal() {
             this.enviando = true;
             try {
@@ -702,24 +744,30 @@ export default {
             this.personal.correo = "";
             this.personal.fono = "";
             this.personal.cel = "";
-            this.personal.tipo = "";
-            this.personal.habilidad = "";
+            this.personal.tipo = "GUARDIA";
+            this.personal.habilidad = "1";
             this.personal.estado = "INACTIVO";
             this.$refs.input_file.value = null;
         },
         obtieneHabilidad(e) {
             let puntuacion = parseInt(e.target.value);
+            let tipo_personal = "SUPERVISOR";
             if (puntuacion) {
-                if (puntuacion <= 25) {
+                if (puntuacion <= this.oValoracion.cant_max_principiante) {
+                    this.personal.tipo = "GUARDIA";
                     this.personal.habilidad = "PRINCIPIANTE";
-                } else if (puntuacion <= 50) {
+                } else if (puntuacion <= this.oValoracion.cant_max_intermedio) {
+                    this.personal.tipo = "GUARDIA";
                     this.personal.habilidad = "INTERMEDIO";
-                } else if (puntuacion <= 75) {
+                } else if (puntuacion <= this.oValoracion.cant_max_moderado) {
+                    this.personal.tipo = "SUPERVISOR";
                     this.personal.habilidad = "MODERADO";
                 } else {
+                    this.personal.tipo = "SUPERVISOR";
                     this.personal.habilidad = "EXPERTO";
                 }
             } else {
+                this.personal.tipo = "";
                 this.personal.habilidad = "";
             }
             this.personal.puntuacion_habilidad = puntuacion;

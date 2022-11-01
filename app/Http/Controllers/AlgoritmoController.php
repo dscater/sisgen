@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Personal;
 use App\Models\PuestoVigilancia;
+use App\Models\ValoracionPersonal;
 use Illuminate\Http\Request;
 
 class AlgoritmoController extends Controller
@@ -17,6 +18,7 @@ class AlgoritmoController extends Controller
     public static $h_moderado = [];
     public static $h_intermedio = [];
     public static $h_principiante = [];
+    public static $guardias = false;
 
     /* ALGORITMO GENETICO */
     /*Descripción del algoritmo
@@ -30,11 +32,11 @@ class AlgoritmoController extends Controller
                 Para este caso se intercambiara el personal de cada cromosoma
             *) Formatear el resultado, este paso no es parte del algoritmo, se utilizará para ordenar y devolver un resultado que se pueda manejar para poder hacer la previsualización
     */
-    public static function algoritmo($nivel_alto, $nivel_medio, $nivel_basico, $h_experto, $h_moderado, $h_intermedio, $h_principiante)
+    public static function algoritmo($nivel_alto, $nivel_medio, $nivel_basico, $h_experto, $h_moderado, $h_intermedio, $h_principiante, $guardias)
     {
         /* Configuración */
-        $cantidad_población = 300;
-        $cantidad_generaciones = 1000;
+        $cantidad_población = 1000;
+        $cantidad_generaciones = 2000;
         $mejores_padres = 10;
 
         self::$nivel_basico = $nivel_basico;
@@ -45,6 +47,8 @@ class AlgoritmoController extends Controller
         self::$h_moderado = $h_moderado;
         self::$h_intermedio = $h_intermedio;
         self::$h_principiante = $h_principiante;
+
+        self::$guardias = $guardias;
 
         // CLASIFICA PERSONAL
         self::$personal_clasificado = self::getPersonalClasificado();
@@ -108,11 +112,8 @@ class AlgoritmoController extends Controller
                 if (in_array($p, $repetidos)) {
                     $verifica_personal = Personal::whereNotIn('id', $personal_existentes)->where('estado', 'ACTIVO')->where("tipo", "SUPERVISOR")->get();
                     foreach ($verifica_personal as $per) {
-                        $puntuacion_habilidad = $per->puntuacion_habilidad;
                         $habilidad = $per->habilidad;
-                        $valor_habilidad = self::getValorHabilidad($habilidad);
-                        $aptitud = self::getAptitudPersonal($valor_habilidad, $puntuacion_habilidad);
-
+                        $aptitud = self::getAptitudPersonal($habilidad, $per->puntuacion_habilidad);
                         if ($aptitud[0] == 1) {
                             $value[1][$key_c][1]["supervisores"][$key] = $per->id;
                             $personal_existentes[] = $per->id;
@@ -146,10 +147,8 @@ class AlgoritmoController extends Controller
                 if (in_array($p, $repetidos)) {
                     $verifica_personal = Personal::whereNotIn('id', $personal_existentes)->where('estado', 'ACTIVO')->where("tipo", "GUARDIA")->get();
                     foreach ($verifica_personal as $per) {
-                        $puntuacion_habilidad = $per->puntuacion_habilidad;
                         $habilidad = $per->habilidad;
-                        $valor_habilidad = self::getValorHabilidad($habilidad);
-                        $aptitud = self::getAptitudPersonal($valor_habilidad, $puntuacion_habilidad);
+                        $aptitud = self::getAptitudPersonal($habilidad, $per->puntuacion_habilidad);
 
                         if ($aptitud[0] == 1) {
                             $value[1][$key_c][1]["guardias"][$key] = $per->id;
@@ -185,37 +184,60 @@ class AlgoritmoController extends Controller
             do {
                 $index2 = rand(0, count($h[1]) - 1);
             } while ($index1 == $index2);
+
             $probabilidad_mutacion = rand(0, 100) / 100;
             if ($probabilidad_mutacion > 0.5) {
                 // SUPERVISORES
-                $cantidad_personal1 = count($h[1][$index1][1]["supervisores"]) - 1;
-                $cantidad_personal2 = count($h[1][$index2][1]["supervisores"]) - 1;
+                $cantidad_personal1 = count($h[1][$index1][1]["supervisores"]);
+                if ($cantidad_personal1 < 1) {
+                    $cantidad_personal1 = 1;
+                }
+                $cantidad_personal2 = count($h[1][$index2][1]["supervisores"]);
+                if ($cantidad_personal2 < 1) {
+                    $cantidad_personal2 = 1;
+                }
                 $cantidad_cambios = $cantidad_personal2;
                 if ($cantidad_personal1 < $cantidad_personal2) {
                     $cantidad_cambios = $cantidad_personal1;
                 }
-                $index_cambio1 = rand(0, $cantidad_cambios);
-                do {
-                    $index_cambio2 = rand(0, $cantidad_cambios);
-                } while ($index_cambio1 == $index_cambio2);
-                $auxiliar = $h;
-                $h[1][$index1][1]["supervisores"][$index_cambio1] = $h[1][$index2][1]["supervisores"][$index_cambio2];
-                $h[1][$index2][1]["supervisores"][$index_cambio2] =  $auxiliar[1][$index1][1]["supervisores"][$index_cambio1];
+                $cantidad_cambios = $cantidad_cambios - 1;
+                $index_cambio1 = 0;
+                $index_cambio2 = 0;
+                if ($cantidad_cambios > 0) {
+                    while ($index_cambio1 == $index_cambio2) {
+                        $index_cambio1 = rand(0, $cantidad_cambios);
+                        $index_cambio2 = rand(0, $cantidad_cambios);
+                    }
+                    $auxiliar = $h;
+                    $h[1][$index1][1]["supervisores"][$index_cambio1] = $h[1][$index2][1]["supervisores"][$index_cambio2];
+                    $h[1][$index2][1]["supervisores"][$index_cambio2] =  $auxiliar[1][$index1][1]["supervisores"][$index_cambio1];
+                }
 
                 // GUARDIAS
-                $cantidad_personal1 = count($h[1][$index1][1]["guardias"]) - 1;
-                $cantidad_personal2 = count($h[1][$index2][1]["guardias"]) - 1;
+                $cantidad_personal1 = count($h[1][$index1][1]["guardias"]);
+                if ($cantidad_personal1 < 1) {
+                    $cantidad_personal1 = 1;
+                }
+                $cantidad_personal2 = count($h[1][$index2][1]["guardias"]);
+                if ($cantidad_personal2 < 1) {
+                    $cantidad_personal2 = 1;
+                }
                 $cantidad_cambios = $cantidad_personal2;
                 if ($cantidad_personal1 < $cantidad_personal2) {
                     $cantidad_cambios = $cantidad_personal1;
                 }
-                $index_cambio1 = rand(0, $cantidad_cambios);
-                do {
-                    $index_cambio2 = rand(0, $cantidad_cambios);
-                } while ($index_cambio1 == $index_cambio2);
-                $auxiliar = $h;
-                $h[1][$index1][1]["guardias"][$index_cambio1] = $h[1][$index2][1]["guardias"][$index_cambio2];
-                $h[1][$index2][1]["guardias"][$index_cambio2] =  $auxiliar[1][$index1][1]["guardias"][$index_cambio1];
+                $cantidad_cambios = $cantidad_cambios - 1;
+                $index_cambio1 = 0;
+                $index_cambio2 = 0;
+                if ($cantidad_cambios > 0) {
+                    while ($index_cambio1 == $index_cambio2) {
+                        $index_cambio1 = rand(0, $cantidad_cambios);
+                        $index_cambio2 = rand(0, $cantidad_cambios);
+                    }
+                    $auxiliar = $h;
+                    $h[1][$index1][1]["guardias"][$index_cambio1] = $h[1][$index2][1]["guardias"][$index_cambio2];
+                    $h[1][$index2][1]["guardias"][$index_cambio2] =  $auxiliar[1][$index1][1]["guardias"][$index_cambio1];
+                }
 
                 $h[0] = self::getPesoCromosoma($h);
                 // $h = self::formateaResultado($h);
@@ -310,21 +332,16 @@ class AlgoritmoController extends Controller
         return (float)(number_format($resultado_peso, 2, '.', ''));
     }
 
-
     /**
      * Función para determinar las aptitudes de cada PERSONAL para cada puesto de vigilancia de NIVEL:Alto,Medio,Basico
      * Ej.: (ID) 1 |(Nombre)Juan Perez | (Habilidad)Experto | (Nivel)Alto
      * Se determinara su aptitud mediante un array que tendra el sgte. formato [PERSONAL(ID), PuedeNivelAlto, PuedeNivelMedio, PuedeNivelBajo]
-     * Si se determina que puede un Nivel tomara el valor 1 caso contrario 0
-     * Para determinar dicho valor clasificando cada nivel deacuerdo a los parametros recibidos por HABILIDAD(minimo y maximo), generando un valor aletario dentro de estos rangos
-     * Donde cada nivel del personal se clasificara con los sgtes. valores: ALTO=1; MEDIO=0.8 ; BAJO = 0.5
-     * Por tanto con un parametro $h_experto(habilidad experto) = [13,15], generando un aleatorio = 13, con un nivel ALTO => Aptitud= ((13/13[minimo]) + (13/15[maximo]) + (95[puntuacion_habilidad] / 100))/3
-     * Dando como resultado = 0.92
-     * Para clasificar su aptitud en cada nivel se debe repetir este proceso para cada uno de los niveles, utilizando el valor obtenido y dividiendolo por el minimo y maximo de cada habilidad obtenida como parametro
-     * Para que el personal sea apto se utilizaran los sgtes. valores:
-     * a) Aptitud Alto,medio y basico: 0.9+ (resultado_experto) | 1+ (resultado_moderado)
-     * b) Aptitud medio y basico: 0.65+ (resultado_intermedio) | 0.8+ (resultado_moderado)
-     * c) Aptitud basico, no cumplir las anteriores condiciones
+     * Si definira un valor entre 0 y 1
+     * Se clasificar al Personal de la sgte. forma:
+     * - EXPERTO [1,1,1]
+     * - MODERADO [(aleatorio 0 - 1) > 0.5 => 1,1,1]   --  En este caso generar un aleatorio entre 0 - 1 si es mayor a 0.5 se pondra 1 (apto)
+     * - INTERMEDIO [(aleatorio 0 - 1) > 0.5 => 1,1,1]    --  En este caso generar un aleatorio entre 0 - 1 si es mayor a 0.5 se pondra 1 (apto)
+     * - PRINCIPIANTE [0,(aleatorio 0 - 1) > 0.5 => 1,1]
      * @return array
      */
     public static function getPersonalClasificado()
@@ -333,9 +350,7 @@ class AlgoritmoController extends Controller
         $array_personal = [];
         foreach ($personals as $personal) {
             $habilidad = $personal->habilidad;
-            $puntuacion_habilidad = $personal->puntuacion_habilidad;
-            $valor_habilidad = self::getValorHabilidad($habilidad);
-            $array_personal[$personal->id] = self::getAptitudPersonal($valor_habilidad, $puntuacion_habilidad);
+            $array_personal[$personal->id] = self::getAptitudPersonal($habilidad, $personal->puntuacion_habilidad);
         }
         return $array_personal;
     }
@@ -385,14 +400,24 @@ class AlgoritmoController extends Controller
                     $cantidad_personal_tomar = 0;
                     if ($puesto->nivel == "ALTO") {
                         $guardia_minimo = self::$nivel_alto['guardia_min'];
-                        $guardia_maximo = self::$nivel_alto['guardia_max'];
+                        $guardia_maximo = self::$nivel_alto['guardia_min'];
+                        if (!self::$guardias) {
+                            $guardia_maximo = self::$nivel_alto['guardia_max'];
+                        }
                     } elseif ($puesto->nivel == "MEDIO") {
                         $guardia_minimo = self::$nivel_medio['guardia_min'];
-                        $guardia_maximo = self::$nivel_medio['guardia_max'];
+                        $guardia_maximo = self::$nivel_medio['guardia_min'];
+                        if (!self::$guardias) {
+                            $guardia_maximo = self::$nivel_medio['guardia_max'];
+                        }
                     } elseif ($puesto->nivel == "BASICO") {
                         $guardia_minimo = self::$nivel_basico['guardia_min'];
-                        $guardia_maximo = self::$nivel_basico['guardia_max'];
+                        $guardia_maximo = self::$nivel_basico['guardia_min'];
+                        if (!self::$guardias) {
+                            $guardia_maximo = self::$nivel_basico['guardia_max'];
+                        }
                     }
+
                     $cantidad_personal_tomar = rand($guardia_minimo, $guardia_maximo); //generar un valor aleatorio deacuerdo al min, y max de personal permitido
                     if ($personal_restante_guardias > $cantidad_personal_tomar) {
                         // if ($cantidad_personal_tomar > $puesto->personal) {
@@ -462,67 +487,103 @@ class AlgoritmoController extends Controller
         return $poblacion;
     }
 
-
-    // FUNCION PARA DETERMINA LA APTITUD DEL PERSONAL
-    public static function getAptitudPersonal($valor_habilidad, $puntuacion_habilidad)
+    /** FUNCION PARA DETERMINA LA APTITUD DEL PERSONAL
+     * - EXPERTO [1,1,1]
+     * - MODERADO [(aleatorio 0 - 1) > 0.5 => 1,1,1]   --  En este caso generar un aleatorio entre 0 - 1 si es mayor a 0.5 se pondra 1 (apto)
+     * - INTERMEDIO [(aleatorio 0 - 1) > 0.5 => 1,1,1]    --  En este caso generar un aleatorio entre 0 - 1 si es mayor a 0.5 se pondra 1 (apto)
+     * - PRINCIPIANTE [0,(aleatorio 0 - 1) > 0.5 => 1,1]
+     * Adicionalmente para los aleatorios se utilizara el PUNTAJE DE HABILIDAD asignado a cada personal y este afectara al valor aleatorio manteniendo o disminuyendo la posibilidad de ser apto
+     */
+    public static function getAptitudPersonal($habilidad, $puntuacion_habilidad)
     {
-        // por defecto el personal tendra aptitud para un nivel Básico
-        $aptitud = [0, 0, 1]; // [ALTO, MEDIO, BAJO]  | 0 = Sin aptutid; 1 = Con aptitud
-        // NIVEL ALTO
-        $resultado_experto = (($valor_habilidad / self::$h_experto['min']) + ($valor_habilidad / self::$h_experto['max']) + ($puntuacion_habilidad / 100)) / 3; //experto
-        $resultado_moderado = (($valor_habilidad / self::$h_moderado['min']) + ($valor_habilidad / self::$h_moderado['max']) + ($puntuacion_habilidad / 100)) / 3; //moderado
-        $resultado_intermedio = (($valor_habilidad / self::$h_intermedio['min']) + ($valor_habilidad / self::$h_intermedio['max']) + ($puntuacion_habilidad / 100)) / 3; //intermedio
-        $resultado_principiante = (($valor_habilidad / self::$h_principiante['min']) + ($valor_habilidad / self::$h_principiante['max']) + ($puntuacion_habilidad / 100)) / 3; //principiante
-        \Log::debug('--------------------------------------------------------');
-        \Log::debug('puntuacion_habilidad::' . $puntuacion_habilidad);
-        \Log::debug('EXPERTO::' . $resultado_experto);
-        \Log::debug('MODERADO::' . $resultado_moderado);
-        \Log::debug('INTERMEDIO::' . $resultado_intermedio);
-        \Log::debug('PRINCIPIANTE::' . $resultado_principiante);
+        $valoracion_personal = ValoracionPersonal::first();
+        $cant_max_experto = 15;
+        $cant_max_moderado = 11;
+        $cant_max_intermedio = 7;
+        $cant_max_principiante = 3;
+
+        if ($valoracion_personal) {
+            $cant_max_experto = $valoracion_personal->cant_max_experto;
+            $cant_max_moderado = $valoracion_personal->cant_max_moderado;
+            $cant_max_intermedio = $valoracion_personal->cant_max_intermedio;
+            $cant_max_principiante = $valoracion_personal->cant_max_principiante;
+        }
+
+        $aptitud = [0, 0, 0]; // [ALTO, MEDIO, BAJO]  | 0 = Sin aptutid; 1 = Con aptitud
 
         // Si es apto para un nivel alto por ende sera apto para los demas niveles
-        if ($resultado_experto >= 0.9 || $resultado_moderado >= 1) {
-            $aptitud[0] = 1;
-            $aptitud[1] = 1;
-            $aptitud[2] = 1;
-        } elseif ($resultado_intermedio >= 0.65 || $resultado_moderado >= 0.8) {
+        if ($habilidad == "EXPERTO") {
+            $probabilidad_aptitud = rand(0, 100) / 100;
+            // determinar el aumento o disminucion segun la habilidad maxima y minima de valoracion y la asignada al personal
+            if ($puntuacion_habilidad < $cant_max_experto) {
+                $probabilidad_aptitud = ($probabilidad_aptitud + 1) / 2;
+            } else {
+                $porcentaje_calculado = (($probabilidad_aptitud * 100) / $cant_max_experto) / 100;
+                $probabilidad_aptitud = ($probabilidad_aptitud + $porcentaje_calculado) / 2;
+            }
+
             $aptitud[0] = 0;
+            if ($probabilidad_aptitud > 0.5) {
+                $aptitud[0] = 1;
+            }
             $aptitud[1] = 1;
             $aptitud[2] = 1;
-        } elseif ($resultado_principiante > 0) {
+        }
+        if ($habilidad == "MODERADO") {
+
+            $probabilidad_aptitud = rand(0, 100) / 100;
+            // determinar el aumento o disminucion segun la habilidad maxima y minima de valoracion y la asignada al personal
+            if ($puntuacion_habilidad < $cant_max_moderado) {
+                $probabilidad_aptitud = ($probabilidad_aptitud + 1) / 2;
+            } else {
+                $porcentaje_calculado = (($probabilidad_aptitud * 100) / $cant_max_moderado) / 100;
+                $probabilidad_aptitud = ($probabilidad_aptitud + $porcentaje_calculado) / 2;
+            }
             $aptitud[0] = 0;
             $aptitud[1] = 0;
+            if ($probabilidad_aptitud > 0.9) {
+                $aptitud[0] = 1;
+            }
+            if ($probabilidad_aptitud > 0.5) {
+                $aptitud[1] = 1;
+            }
             $aptitud[2] = 1;
         }
-
-        return $aptitud;
-    }
-
-    /**
-     * Deacuerdo a la habilidad de cada personal devolvera un valor aleatorio que se cuentra en el rango de los dos valores maximo y minimo enviados desde el formulario
-     */
-    public static function getValorHabilidad($habilidad)
-    {
-        $min = 0;
-        $max = 0;
-        switch ($habilidad) {
-            case 'EXPERTO':
-                $min = self::$h_experto['min'];
-                $max = self::$h_experto['max'];
-                break;
-            case 'MODERADO':
-                $min = self::$h_moderado['min'];
-                $max = self::$h_moderado['max'];
-                break;
-            case 'INTERMEDIO':
-                $min = self::$h_intermedio['min'];
-                $max = self::$h_intermedio['max'];
-                break;
-            case 'PRINCIPIANTE':
-                $min = self::$h_principiante['min'];
-                $max = self::$h_principiante['max'];
-                break;
+        if ($habilidad == "INTERMEDIO") {
+            $probabilidad_aptitud = rand(0, 100) / 100;
+            // determinar el aumento o disminucion segun la habilidad maxima y minima de valoracion y la asignada al personal
+            if ($puntuacion_habilidad < $cant_max_intermedio) {
+                $probabilidad_aptitud = ($probabilidad_aptitud + 1) / 2;
+            } else {
+                $porcentaje_calculado = (($probabilidad_aptitud * 100) / $cant_max_intermedio) / 100;
+                $probabilidad_aptitud = ($probabilidad_aptitud + $porcentaje_calculado) / 2;
+            }
+            $aptitud[0] = 0;
+            $aptitud[1] = 0;
+            if ($probabilidad_aptitud > 0.9) {
+                $aptitud[0] = 1;
+            }
+            if ($probabilidad_aptitud > 0.5) {
+                $aptitud[1] = 1;
+            }
+            $aptitud[2] = 1;
         }
-        return rand($min, $max);
+        if ($habilidad == "PRINCIPIANTE") {
+            $probabilidad_aptitud = rand(0, 100) / 100;
+            // determinar el aumento o disminucion segun la habilidad maxima y minima de valoracion y la asignada al personal
+            if ($puntuacion_habilidad < $cant_max_principiante) {
+                $probabilidad_aptitud = ($probabilidad_aptitud + 1) / 2;
+            } else {
+                $porcentaje_calculado = (($probabilidad_aptitud * 100) / $cant_max_principiante) / 100;
+                $probabilidad_aptitud = ($probabilidad_aptitud + $porcentaje_calculado) / 2;
+            }
+            $aptitud[0] = 0;
+            $aptitud[1] = 0;
+            if ($probabilidad_aptitud > 0.95) {
+                $aptitud[1] = 1;
+            }
+            $aptitud[2] = 1;
+        }
+        return $aptitud;
     }
 }

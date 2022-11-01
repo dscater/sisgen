@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ValoracionPersonal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PersonalFactory extends Factory
@@ -14,14 +15,34 @@ class PersonalFactory extends Factory
     public function definition()
     {
 
+        $valoracion_personal = ValoracionPersonal::first();
+        if ($valoracion_personal) {
+            $cant_min_experto = $valoracion_personal->cant_min_experto;
+            $cant_max_moderado = $valoracion_personal->cant_max_moderado;
+            $cant_max_intermedio = $valoracion_personal->cant_max_intermedio;
+            $cant_max_principiante = $valoracion_personal->cant_max_principiante;
+        } else {
+            $cant_min_experto = 12;
+            $cant_max_moderado = 11;
+            $cant_max_intermedio = 7;
+            $cant_max_principiante = 3;
+        }
+
         $puntuacion = $this->faker->numberBetween(1, 100);
+        $tipo = "SUPERVISOR";
         $habilidad = "EXPERTO";
-        if ($puntuacion <= 25) {
+        if ($puntuacion <= $cant_max_principiante) {
+            $tipo = "GUARDIA";
             $habilidad = "PRINCIPIANTE";
-        } elseif ($puntuacion <= 50) {
+        } elseif ($puntuacion <= $cant_max_intermedio) {
+            $tipo = "GUARDIA";
             $habilidad = "INTERMEDIO";
-        } elseif ($puntuacion <= 75) {
+        } elseif ($puntuacion <= $cant_max_moderado) {
+            $tipo = "SUPERVISOR";
             $habilidad = "MODERADO";
+        } else {
+            $tipo = "SUPERVISOR";
+            $habilidad = "EXPERTO";
         }
 
         return [
@@ -38,7 +59,7 @@ class PersonalFactory extends Factory
             'correo' => $this->faker->unique()->safeEmail(),
             'fono' => $this->faker->phoneNumber(),
             'cel' => $this->faker->phoneNumber(),
-            'tipo' => $this->faker->randomElement(['SUPERVISOR', 'GUARDIA']),
+            'tipo' => $tipo,
             'puntuacion_habilidad' => $puntuacion,
             'habilidad' => $habilidad,
             'estado' => 'ACTIVO',

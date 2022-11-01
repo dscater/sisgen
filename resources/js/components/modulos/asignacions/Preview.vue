@@ -21,7 +21,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-md-12">
                             <p>
                                 <strong
@@ -35,7 +35,7 @@
                                 >
                             </p>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="row">
                         <div
                             class="col-md-12"

@@ -221,11 +221,7 @@
                                                                 row.item
                                                                     .habilidad
                                                                     ? row.item
-                                                                          .habilidad +
-                                                                      "(" +
-                                                                      row.item
-                                                                          .puntuacion_habilidad +
-                                                                      ")"
+                                                                          .habilidad
                                                                     : "S/D"
                                                             }}</b-col>
                                                         </b-row>
@@ -349,8 +345,8 @@ export default {
                     sortable: true,
                 },
                 {
-                    key: "nacionalidad",
-                    label: "Nacionalidad",
+                    key: "tipo",
+                    label: "Tipo",
                     sortable: true,
                 },
                 {
@@ -409,7 +405,7 @@ export default {
                 correo: "",
                 fono: "",
                 cel: "",
-                tipo: "",
+                tipo: "GUARDIA",
                 puntuacion_habilidad: "",
                 habilidad: "",
                 estado: "INACTIVO",
@@ -547,8 +543,8 @@ export default {
             this.oPersonal.correo = "";
             this.oPersonal.fono = "";
             this.oPersonal.cel = "";
-            this.oPersonal.tipo = "";
-            this.oPersonal.puntuacion_habilidad = "";
+            this.oPersonal.tipo = "GUARDIA";
+            this.oPersonal.puntuacion_habilidad = "1";
             this.oPersonal.habilidad = "";
             this.oPersonal.estado = "INACTIVO";
             this.oPersonal.foto = null;

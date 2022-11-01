@@ -150,23 +150,37 @@ class AsignacionController extends Controller
             'max' => $request->cant_max_principiante
         ];
 
-        // VALIDAR LA CANTIDAD DE SUPERVISORES EXISTENTES DE ACUERDO AL REQUERIDO POR PUESTOS DE VIGILANCIA
         $cpv_alto = count(PuestoVigilancia::where("estado", "ACTIVO")->where("nivel", "ALTO")->get());
         $cpv_medio = count(PuestoVigilancia::where("estado", "ACTIVO")->where("nivel", "MEDIO")->get());
         $cpv_basico = count(PuestoVigilancia::where("estado", "ACTIVO")->where("nivel", "BAJO")->get());
+        // VALIDAR LA CANTIDAD DE GUARDIAS EXISTENTES DE ACUERDO AL REQUERIDO POR PUESTOS DE VIGILANCIA
+        $total_guardias_requeridos = (int)$cpv_alto * (int)$nivel_alto["guardia_min"] + (int)$cpv_medio * (int)$nivel_medio["guardia_min"] + (int)$cpv_basico * (int)$nivel_basico["guardia_min"];
 
+        $personal_existente = Personal::where('estado', 'ACTIVO')->where("tipo", "GUARDIA")->get();
+        if (count($personal_existente) < $total_guardias_requeridos) {
+            return response()->JSON([
+                'sw' => false,
+                'msj' => 'No es posible realizar la asignación debido a que la cantidad de Guardias no es suficiente',
+            ]);
+        }
+        $total_guardias_maximos = (int)$cpv_alto * (int)$nivel_alto["guardia_max"] + (int)$cpv_medio * (int)$nivel_medio["guardia_max"] + (int)$cpv_basico * (int)$nivel_basico["guardia_max"];
+        $tomar_minimos_guardias = true;
+        if (count($personal_existente) >= $total_guardias_maximos) {
+            $tomar_minimos_guardias = false;
+        }
+        // VALIDAR LA CANTIDAD DE SUPERVISORES EXISTENTES DE ACUERDO AL REQUERIDO POR PUESTOS DE VIGILANCIA
         $total_sup_requeridos = (int)$cpv_alto * (int)$nivel_alto["supervisor_min"] + (int)$cpv_medio * (int)$nivel_medio["supervisor_min"] + (int)$cpv_basico * (int)$nivel_basico["supervisor_min"];
 
         $personal_existente = Personal::where('estado', 'ACTIVO')->where("tipo", "SUPERVISOR")->get();
         if (count($personal_existente) < $total_sup_requeridos) {
             return response()->JSON([
                 'sw' => false,
-                'msj' => 'No es posible realizar la asignación debido a que la cantidad de supervisores no es suficiente',
+                'msj' => 'No es posible realizar la asignación debido a que la cantidad de Supervisores no es suficiente',
             ]);
         }
 
         ini_set('max_execution_time', 0);
-        $resultado = AlgoritmoController::algoritmo($nivel_alto, $nivel_medio, $nivel_basico, $h_experto, $h_moderado, $h_intermedio, $h_principiante);
+        $resultado = AlgoritmoController::algoritmo($nivel_alto, $nivel_medio, $nivel_basico, $h_experto, $h_moderado, $h_intermedio, $h_principiante, $tomar_minimos_guardias);
         sleep(2);
         return response()->JSON([
             'sw' => true,

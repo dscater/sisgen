@@ -153,9 +153,12 @@
                                         <el-input
                                             class="w-100 d-block"
                                             :class="{
-                                                'is-invalid': errors.propietario,
+                                                'is-invalid':
+                                                    errors.propietario,
                                             }"
-                                            v-model="oPuestoVigilancia.propietario"
+                                            v-model="
+                                                oPuestoVigilancia.propietario
+                                            "
                                         >
                                             <el-option
                                                 v-for="(
@@ -459,6 +462,12 @@ export default {
             listNiveles: ["ALTO", "MEDIO", "BASICO"],
             totalRows: 10,
             filter: null,
+
+            oValoracion: {
+                cant_min_per_alto: 11,
+                cant_max_per_medio: 10,
+                cant_max_per_basico: 6,
+            },
         };
     },
     computed: {
@@ -483,10 +492,19 @@ export default {
         },
     },
     mounted() {
+        this.getValoraciones();
         this.loadingWindow.close();
         this.getPuestoVigilancias();
     },
     methods: {
+        getValoraciones(){
+            axios.get("/admin/valoracions/getValoraciones").then(response=>{
+                this.oValoracion.cant_min_per_alto = response.data.cant_min_per_alto;
+                this.oValoracion.cant_max_per_medio = response.data.cant_max_per_medio;
+                this.oValoracion.cant_max_per_basico = response.data.cant_max_per_basico;
+            });
+        },
+
         // Seleccionar Opciones de Tabla
         editarRegistro(item) {
             this.accion = "edit";
@@ -667,11 +685,10 @@ export default {
         getNivel(e) {
             let personal = parseInt(e.target.value);
             let nivel = "ALTO";
-            console.log(personal);
             if (personal) {
-                if (personal <= 6) {
+                if (personal <= this.oValoracion.cant_max_per_basico) {
                     nivel = "BASICO";
-                } else if (personal <= 12) {
+                } else if (personal <= this.oValoracion.cant_max_per_medio) {
                     nivel = "MEDIO";
                 }
             } else {
